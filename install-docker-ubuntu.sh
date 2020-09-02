@@ -7,7 +7,6 @@ sudo apt-get install \
     curl \
     gnupg-agent \
     software-properties-common
-
 #3)add GPG key from docker
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 #4)add stable release to repo file
