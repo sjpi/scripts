@@ -1,7 +1,7 @@
 #1)update repo's
-sudo apt-get update
+sudo apt update
 #2)install dependencies
-sudo apt-get install \
+sudo apt install \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -15,9 +15,9 @@ sudo add-apt-repository \
    $(lsb_release -cs) \
    stable"
 #5)update repo's
-sudo apt-get update
+sudo apt update
 #6)install docker ce, docker ce cli and containerd
-sudo apt-get install docker-ce docker-ce-cli containerd.io
+sudo apt install docker-ce docker-ce-cli containerd.io
 #7)start and automate docker
 sudo systemctl start docker && sudo systemctl enable docker
 #8)add current user to docker group
