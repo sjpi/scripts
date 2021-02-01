@@ -6,7 +6,7 @@ param(
 ) 
 BEGIN{ 
     #Checks if the user is in the administrator group. Warns and stops if the user is not. 
-    If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(` 
+    If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
         [Security.Principal.WindowsBuiltInRole] "Administrator")) 
     { 
         Write-Warning "You are not running this as local administrator. Run it again in an elevated prompt." 
