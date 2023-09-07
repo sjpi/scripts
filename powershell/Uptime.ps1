@@ -1,5 +1,5 @@
 ﻿# This PS script provides Uptime and Ping results for list of computers.
-		$names = Get-Content "C:\mowens\servers.txt"
+		$names = Get-Content "C:\username\servers.txt"
         @(
 		   foreach ($name in $names)
 	      {
