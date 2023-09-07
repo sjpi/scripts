@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# set the name of the database to be backed up
+database_name=mydatabase
+
+# set the name of the S3 bucket
+s3_bucket=my-s3-bucket
+
+# create a backup file with the current timestamp
+backup_file=${database_name}_$(date +%Y%m%d_%H%M%S).sql
+
+# create a PostgreSQL dump of the database
+pg_dump $database_name > $backup_file
+
+# install the AWS CLI if it is not already installed
+if ! [ -x "$(command -v aws)" ]; then
+  sudo apt-get update
+  sudo apt-get install -y awscli
+fi
+
+# upload the backup file to the S3 bucket
+aws s3 cp $backup_file s3://$s3_bucket/$backup_file
+
+# remove the local copy of the backup file
+rm $backup_file
