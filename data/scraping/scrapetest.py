@@ -1,4 +1,6 @@
-## web scraper designed to extract email addresses and business names from a list of URLs
+# web scraper designed to extract email addresses and business names from a list of URLs
+##selenium based
+
 ### !! Use only when and where you are given permission ##
 
 import re
