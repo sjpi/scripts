@@ -1,0 +1,1 @@
+Do NOT use the fake email list in production. Use for testing user signups, etc.
