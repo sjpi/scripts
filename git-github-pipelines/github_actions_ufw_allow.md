@@ -1,60 +1,54 @@
-#!/bin/bash
-## 11/2024 ##
+## Requirements
 
-# delete registry and repo when done.
-## when not careful azure will wipe repository once empty. Ensure you check if az cli still functions the same before running.
+1. **Tools**:
+   - `curl`
+   - `jq`
+   - `ufw`
 
-## CHANGE ME
-REGISTRY_NAME="REGISTRY-NAME"
-## CHANGE ME
-REPOSITORY_NAME="REPO-NAME" 
-## CHANGE ME
-CUTOFF_DATE="2024-11-8T00:00:00Z"
+   Install with:
+   ```bash
+   sudo apt update && sudo apt install curl jq ufw -y
+   ```
 
+2. **Permissions**:
+   - Run the script with `sudo` to modify UFW rules.
 
-echo "Fetching manifests from repository '$REPOSITORY_NAME' in registry '$REGISTRY_NAME'..."
-manifests=$(az acr repository show-manifests \
-  --name $REGISTRY_NAME \
-  --repository $REPOSITORY_NAME \
-  --orderby time_asc \
-  --output json)
+## How to Use
 
-# check if any manifests were retrieved
-if [[ -z "$manifests" || "$manifests" == "[]" ]]; then
-  echo "No manifests found in repository '$REPOSITORY_NAME'. Exiting."
-  exit 0
-fi
+1. **Download the Script**:
+   Save the script as `update_github_ufw.sh`.
 
-# iterate through manifests and delete old ones
-echo "Processing manifests..."
-echo "$manifests" | jq -c '.[]' | while read manifest; do
-  # Extract timestamp and digest
-  timestamp=$(echo $manifest | jq -r '.timestamp')
-  digest=$(echo $manifest | jq -r '.digest')
+2. **Make the Script Executable**:
+   ```bash
+   chmod +x update_github_ufw.sh
+   ```
 
-  # ensure timestamp and digest are valid
-  if [[ -z "$timestamp" || -z "$digest" ]]; then
-    echo "Skipping manifest due to missing fields."
-    continue
-  fi
+3. **Run the Script**:
+   Execute the script with superuser privileges:
+   ```bash
+   sudo ./update_github_ufw.sh
+   ```
 
-  # display the manifest details being processed
-  echo "Processing manifest with digest: $digest"
-  echo "Timestamp: $timestamp"
+4. **Verify UFW Rules**:
+   Check the added rules:
+   ```bash
+   sudo ufw status verbose
+   ```
 
-  # compare the timestamp with the cutoff date..
-  if [[ "$timestamp" < "$CUTOFF_DATE" ]]; then
-    echo "Deleting image with digest: $digest (Timestamp: $timestamp)..."
-    az acr repository delete \
-      --name $REGISTRY_NAME \
-      --image "$REPOSITORY_NAME@$digest" \
-      --yes || echo "Failed to delete image $REPOSITORY_NAME@$digest"
-    echo "Successfully deleted image: $REPOSITORY_NAME@$digest"
-  else
-    echo "Manifest $digest is newer than cutoff date ($CUTOFF_DATE). Skipping."
-  fi
+## Features
 
-  echo "-----------------------------------"
-done
+- Fetches the latest GitHub IP ranges for SSH, hooks, actions, and pages.
+- Validates IP formats and updates UFW rules dynamically.
+- Tags rules with the comment `GitHub SSH Allow` for easy identification.
 
-echo "Processing complete."
+## OPT 
+- Modify the services to include (`.ssh_keys[]`, `.hooks[]`, `.actions[]`, `.pages[]`) by editing the script.
+- Set up a cron job to automate periodic updates:
+  ```bash
+  sudo crontab -e
+  ```
+  Example cron entry to run daily at 3 AM:
+  ```
+  0 3 * * * /path/to/update_github_ufw.sh
+
+  
